@@ -304,8 +304,11 @@ export default {
       if (this.value === '') {
         return;
       }
-
-      fetch(`${config.poiFeature}?limit=10&bbox=${this.mapBounds}&normalized_cat=${this.filter}`)
+      let filter = `normalized_cat=${this.filter}`;
+      if (this.filter.includes('/')) {
+        filter = `cat=${this.filter.split('/')[1]}`;
+      }
+      fetch(`${config.poiFeature}?limit=10&bbox=${this.mapBounds}&${filter}`)
         .then(res => res.json())
         .then((json) => {
           this.results = json;
