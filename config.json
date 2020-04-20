@@ -8,6 +8,7 @@
   "poiFeature": "https://features.caresteouvert.fr/collections/public.poi_osm/items",
   "apiUrl": "https://api.caresteouvert.fr",
   "geoIpUrl": "https://geo.caresteouvert.fr/me",
+  "directoryUrl": "http://172.18.0.3:3000/directory",
   "minZoomPoi": 13,
   "maxZoomPoi": 13,
   "defaults": {
