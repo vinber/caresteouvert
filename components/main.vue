@@ -9,6 +9,7 @@
   >
     <div>
       <v-navigation-drawer
+        v-if="!isMobile"
         v-model="sidebar"
         temporary
         stateless
@@ -16,7 +17,13 @@
         width="300"
         fixed
       >
-        <main-menu>
+        <filter-results
+          v-if="filter != ''"
+          v-model="filter"
+          :featuresAndLocation="featuresAndLocation"
+          :results="results"
+        />
+        <main-menu v-else>
           <filter-list v-model="filter" />
         </main-menu>
       </v-navigation-drawer>
@@ -36,6 +43,7 @@
             :map-zoom.sync="mapZoom"
             :filter="filter"
             :featuresAndLocation="featuresAndLocation"
+            @update:mapBounds="(bounds) => mapBounds = bounds"
           />
           <v-slide-y-reverse-transition>
             <v-chip
@@ -55,7 +63,16 @@
           v-if="isMobile"
           v-model="filter"
         >
-          <main-menu :show-brand="false">
+          <filter-results
+            v-if="filter != ''"
+            v-model="filter"
+            :featuresAndLocation="featuresAndLocation"
+            :results="results"
+          />
+          <main-menu
+            v-else
+            :show-brand="false"
+          >
             <filter-list v-model="filter" />
           </main-menu>
         </bottom-menu>
@@ -74,6 +91,7 @@ import { encode, decode, encodePosition, decodePosition } from '../lib/url';
 import AppsSheet from './apps_sheet';
 import MainMenu from './main_menu';
 import FilterList from './filter_list';
+import FilterResults from './filter_results';
 import TopToolbar from './top_toolbar';
 import BottomMenu from './bottom_menu';
 import RgpdBanner from './rgpd_banner';
@@ -83,6 +101,7 @@ export default {
     AppsSheet,
     BottomMenu,
     FilterList,
+    FilterResults,
     MainMenu,
     RgpdBanner,
     TopToolbar,
@@ -101,9 +120,11 @@ export default {
       loadMap: false,
       isMobile: false,
       sidebar: false,
+      mapBounds: [],
       mapStyle: null,
       mapCenter: null,
       mapZoom: null,
+      results: {},
       filter: '',
       rgpdBannerHidden: false,
       minZoomPoi: config.minZoomPoi
@@ -143,6 +164,11 @@ export default {
 
     filter() {
       this.updateRoute();
+      this.fetchResults();
+    },
+
+    mapBounds() {
+      this.fetchResults();
     }
   },
 
@@ -272,6 +298,18 @@ export default {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
       return R * c;
+    },
+
+    fetchResults() {
+      if (this.value === '') {
+        return;
+      }
+
+      fetch(`${config.poiFeature}?limit=10&bbox=${this.mapBounds}&normalized_cat=${this.filter}`)
+        .then(res => res.json())
+        .then((json) => {
+          this.results = json;
+        });
     }
   }
 }

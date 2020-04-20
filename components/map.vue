@@ -6,6 +6,7 @@
     @load="load"
     @update:center="updateMapCenter"
     @update:zoom="updateMapZoom"
+    @update:bounds="updateMapBounds"
   >
     <MglMarker
       v-if="place"
@@ -217,6 +218,10 @@ export default {
 
     updateMapZoom(mapZoom) {
       this.$emit('update:mapZoom', mapZoom);
+    },
+
+    updateMapBounds(mapBounds) {
+      this.$emit('update:mapBounds', mapBounds.toArray());
     },
 
     mouseenter(e) {
