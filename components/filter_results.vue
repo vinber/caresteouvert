@@ -66,6 +66,8 @@
           :key="place.id"
           :place="place"
           :featuresAndLocation="featuresAndLocation"
+          @mouseenter.native="$store.commit('setPlace', place)"
+          @mouseleave.native="$store.commit('setPlace', null)"
         />
       </template>
       <v-divider />
