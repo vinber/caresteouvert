@@ -72,11 +72,23 @@
       </template>
       <v-divider />
     </v-list>
-    <v-pagination
-      :value="1"
-      :length="4"
-      class="my-4"
-    ></v-pagination>
+    <div class="d-flex">
+      <v-spacer />
+      <v-btn
+        :disabled="offset === 0"
+        icon
+        @click="$emit('update:offset', offset - 10)"
+      >
+        <v-icon small>osm-chevron_left</v-icon>
+      </v-btn>
+      <v-btn
+        :disabled="results.numberReturned < 10"
+        icon
+        @click="$emit('update:offset', offset + 10)"
+      >
+        <v-icon small>osm-chevron_right</v-icon>
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -95,6 +107,11 @@ export default {
 
     results: {
       type: Object,
+      required: true
+    },
+
+    offset: {
+      type: Number,
       required: true
     },
 

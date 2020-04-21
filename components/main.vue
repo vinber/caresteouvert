@@ -22,6 +22,7 @@
           v-model="filter"
           :featuresAndLocation="featuresAndLocation"
           :results="results"
+          :offset.sync="resultsOffset"
         />
         <main-menu v-else>
           <filter-list v-model="filter" />
@@ -68,6 +69,7 @@
             v-model="filter"
             :featuresAndLocation="featuresAndLocation"
             :results="results"
+            :offset.sync="resultsOffset"
           />
           <main-menu
             v-else
@@ -125,6 +127,7 @@ export default {
       mapCenter: null,
       mapZoom: null,
       results: {},
+      resultsOffset: 0,
       filter: '',
       rgpdBannerHidden: false,
       minZoomPoi: config.minZoomPoi
@@ -164,10 +167,16 @@ export default {
 
     filter() {
       this.updateRoute();
+      this.resultsOffset = 0;
       this.fetchResults();
     },
 
     mapBounds() {
+      this.resultsOffset = 0;
+      this.fetchResults();
+    },
+
+    resultsOffset() {
       this.fetchResults();
     }
   },
@@ -308,7 +317,7 @@ export default {
       if (this.filter.includes('/')) {
         filter = `cat=${this.filter.split('/')[1]}`;
       }
-      fetch(`${config.poiFeature}?limit=10&bbox=${this.mapBounds}&${filter}`)
+      fetch(`${config.poiFeature}?limit=10&offset=${this.resultsOffset}&bbox=${this.mapBounds}&${filter}`)
         .then(res => res.json())
         .then((json) => {
           this.results = json;
